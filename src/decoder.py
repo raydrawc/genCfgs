@@ -42,8 +42,8 @@ CLT_LIST = "clist"
 ARRAY_FLAG = "array"  # 标识表的是array类型的表
 OBJECT_FLAG = "object"  # 标识表的是object类型的表
 
-KEY_FLAG = "$key_"  # array表的 作为Key字段的前缀标识
-KEY_FLAG_LEN = 5  # array表的 作为Key字段的前缀标识长度 用于分割字符串
+KEY_FLAG = "$"  # array表的 作为Key字段的前缀标识
+KEY_FLAG_LEN = 1  # array表的 作为Key字段的前缀标识长度 用于分割字符串
 
 # 支持的数据类型
 # "int":1,"number":2,"int64":3,"string":4, "tuple":5, "list":6, "dict":7 为python原生数据格式
