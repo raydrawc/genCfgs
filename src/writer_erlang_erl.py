@@ -104,8 +104,8 @@ class ErlangerlWriter(Writer):
 
                 val_type = type(lk)
                 if str == val_type:
-                    lk = lk.replace("<<\"", "\'")
-                    lk = lk.replace("\"/utf8>>", "\'")
+                    lk = lk.replace("<<\"", "")
+                    lk = lk.replace("\"/utf8>>", "")
 
                 oneval = "".join([lk, " = ", lv, "\n"])
 

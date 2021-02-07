@@ -59,7 +59,7 @@ class ErlanghrlWriter(Writer):
             k_indent, lk = self.to_target_lang(k, indent)
             val_type = type(lk)
             if str == val_type:
-                lk = lk.replace("\"", "\'")
+                lk = lk.replace("\"", "")
             if None == comment:
                 comment = ""
             val = "".join([lk.ljust(20, " "), "\t%% ", comment, "\n"])
@@ -88,7 +88,7 @@ class ErlanghrlWriter(Writer):
 
             val_type = type(lk)
             if str == val_type:
-                lk = lk.replace("\"", "\'")
+                lk = lk.replace("\"", "")
             key = "".join([lk, " => "])
             val = "".join([key, lv])
             dict_ctx_list.append(val)
