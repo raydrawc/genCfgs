@@ -6,8 +6,6 @@ import openpyxl
 import os
 import re
 import sys
-from writer_erlang_erl import *
-from writer_erlang_hrl import *
 
 import color_print
 from slpp.slpp import slpp as lua
@@ -222,13 +220,7 @@ class Sheet(object):
     # 分别写入到服务端、客户端的配置文件
     def write_files(self, srv_path, clt_path):
         if None != srv_path and None != self.srv_writer:
-            if self.srv_writer == "erlang":
-                self.write_one_file(self.srv_ctx, srv_path, eval("erlanghrl".capitalize() + "Writer"), self.srv_keys, self.srv_comment,
-                                    self.srv_is_list)
-                self.write_one_file(self.srv_ctx, srv_path, eval("erlangerl".capitalize() + "Writer"), self.srv_keys, self.srv_comment,
-                                    self.srv_is_list)
-            else:
-                self.write_one_file(self.srv_ctx, srv_path, self.srv_writer, self.srv_keys, self.srv_comment,
+            self.write_one_file(self.srv_ctx, srv_path, self.srv_writer, self.srv_keys, self.srv_comment,
                                     self.srv_is_list)
         if None != clt_path and None != self.clt_writer:
             self.write_one_file(self.clt_ctx, clt_path, self.clt_writer, self.clt_keys, self.clt_comment,
