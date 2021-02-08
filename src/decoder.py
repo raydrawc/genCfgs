@@ -6,6 +6,8 @@ import openpyxl
 import os
 import re
 import sys
+from writer_erlang_erl import *
+from writer_erlang_hrl import *
 
 import color_print
 from slpp.slpp import slpp as lua
@@ -49,7 +51,8 @@ KEY_FLAG_LEN = 1  # array表的 作为Key字段的前缀标识长度 用于分�
 # "int":1,"number":2,"int64":3,"string":4, "tuple":5, "list":6, "dict":7 为python原生数据格式
 # "json":8,"lua":9 为json和lua的数据格式
 # excel配置的时候 对应类型字段 填入对应数据类型的有效数据格式的数据就OK
-TYPES = {"int": 1, "number": 2, "int64": 3, "string": 4, "tuple": 5, "list": 6, "dict": 7, "json": 8, "lua": 9}
+TYPES = {"int": 1, "number": 2, "int64": 3, "string": 4, "tuple": 5, "list": 6, "dict": 7, "json": 8, "lua": 9,
+         "elist": 10, "etuple": 11, "etuple_list": 13}
 
 try:
     basestring
@@ -108,6 +111,23 @@ class ValueConverter(object):
             return list(eval(val))
         elif "dict" == val_type:
             return dict(eval(val))
+        elif "elist" == val_type:
+            val = val.replace("{", "(")
+            val = val.replace("}", ")")
+            return list(eval("["+val+"]"))
+        elif "etuple" == val_type:
+            val = val.replace("{", "(")
+            val = val.replace("}", ")")
+            return tuple(eval("("+val+")"))
+        elif "etuple_list" == val_type:
+            ## 重新解析 以;号为分隔符
+            val = val.replace("{", "(")
+            val = val.replace("}", ")")
+            val_args = val.split(";")
+            for k, v in enumerate(val_args):
+                val_args[k] = "(" + v + ")"
+            val = ",".join(val_args)
+            return list(eval("["+val+"]"))
         else:
             self.raise_error("invalid type", value)
 
@@ -202,8 +222,14 @@ class Sheet(object):
     # 分别写入到服务端、客户端的配置文件
     def write_files(self, srv_path, clt_path):
         if None != srv_path and None != self.srv_writer:
-            self.write_one_file(self.srv_ctx, srv_path, self.srv_writer, self.srv_keys, self.srv_comment,
-                                self.srv_is_list)
+            if self.srv_writer == "erlang":
+                self.write_one_file(self.srv_ctx, srv_path, eval("erlanghrl".capitalize() + "Writer"), self.srv_keys, self.srv_comment,
+                                    self.srv_is_list)
+                self.write_one_file(self.srv_ctx, srv_path, eval("erlangerl".capitalize() + "Writer"), self.srv_keys, self.srv_comment,
+                                    self.srv_is_list)
+            else:
+                self.write_one_file(self.srv_ctx, srv_path, self.srv_writer, self.srv_keys, self.srv_comment,
+                                    self.srv_is_list)
         if None != clt_path and None != self.clt_writer:
             self.write_one_file(self.clt_ctx, clt_path, self.clt_writer, self.clt_keys, self.clt_comment,
                                 self.clt_is_list)

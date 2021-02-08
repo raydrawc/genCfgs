@@ -56,8 +56,10 @@ class ErlanghrlWriter(Writer):
         list_text_list = []
         for k in self.comment_text:
             comment = self.comment_text[k]
+
             k_indent, lk = self.to_target_lang(k, indent)
             val_type = type(lk)
+            ## key值
             if str == val_type:
                 lk = lk.replace("\"", "")
             if None == comment:

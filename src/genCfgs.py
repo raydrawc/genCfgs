@@ -35,7 +35,10 @@ class Reader:
         self.clt_writer = None
 
         if None != srv_writer:
-            self.srv_writer = eval(srv_writer.capitalize() + "Writer")
+            if srv_writer == "erlang":
+                self.srv_writer = srv_writer
+            else:
+                self.srv_writer = eval(srv_writer.capitalize() + "Writer")
         if None != clt_writer:
             self.clt_writer = eval(clt_writer.capitalize() + "Writer")
 
