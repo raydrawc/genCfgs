@@ -6,6 +6,7 @@ import openpyxl
 import os
 import re
 import sys
+import time
 
 import color_print
 from slpp.slpp import slpp as lua
@@ -50,7 +51,7 @@ KEY_FLAG_LEN = 1  # array表的 作为Key字段的前缀标识长度 用于分�
 # "json":8,"lua":9 为json和lua的数据格式
 # excel配置的时候 对应类型字段 填入对应数据类型的有效数据格式的数据就OK
 TYPES = {"int": 1, "number": 2, "int64": 3, "string": 4, "tuple": 5, "list": 6, "dict": 7, "json": 8, "lua": 9,
-         "elist": 10, "etuple": 11, "etuple_list": 13}
+         "elist": 10, "etuple": 11, "etuple_list": 13, "atom":14, "unixtime":15}
 
 try:
     basestring
@@ -84,6 +85,8 @@ class ValueConverter(object):
             return val
         elif isinstance(val, unicode):
             return val
+        elif isinstance(val, int):
+            return str(val)
         else:
             return str(val).decode("utf8")
 
@@ -98,7 +101,9 @@ class ValueConverter(object):
             # if long( val ) == float( val ) : return long( val )
             return float(val)
         elif "string" == val_type:
-            return self.to_unicode_str(val)
+            val = self.to_unicode_str(val)
+            val = "$\"" + val + "$\""
+            return str(val)
         elif "json" == val_type:
             return json.loads(val)
         elif "lua" == val_type:
@@ -118,7 +123,7 @@ class ValueConverter(object):
             val = val.replace("}", ")")
             return tuple(eval("("+val+")"))
         elif "etuple_list" == val_type:
-            ## 重新解析 以;号为分隔符
+            # 重新解析 以;号为分隔符
             val = val.replace("{", "(")
             val = val.replace("}", ")")
             val_args = val.split(";")
@@ -126,6 +131,13 @@ class ValueConverter(object):
                 val_args[k] = "(" + v + ")"
             val = ",".join(val_args)
             return list(eval("["+val+"]"))
+        elif "unixtime" == val_type :
+            # 转义unixt ime
+            time_arg = time.strptime(str(val), "%Y-%m-%d %H:%M:%S")
+            time_stamp = time.mktime(time_arg)
+            return long(time_stamp)
+        elif "atom" == val_type:
+            return self.to_unicode_str(val)
         else:
             self.raise_error("invalid type", value)
 

@@ -243,7 +243,10 @@ class ErlangerlWriter(Writer):
                 return False, str(int(value))
             return False, str(value)
         elif str == val_type or unicode == val_type:
-            return False, "".join(["<<\"", value, "\"/utf8>>"])
+            value = value.replace("$\"", "<<\"", 1)
+            value = value.replace("$\"", "\"/utf8>>", 1)
+            # return False, "".join(["<<\"", value, "\"/utf8>>"])
+            return False, str(value)
         elif tuple == val_type:
             return self.tuple_to_erlang(value, indent)
         elif dict == val_type:

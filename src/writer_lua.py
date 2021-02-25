@@ -253,7 +253,10 @@ class LuaWriter(Writer):
             return False, str(value)
         elif str == val_type or unicode == val_type:
             # 字符串要用单引号，因为Lua里单引号级别比双引号高
-            return False, "".join(["'", value, "'"])
+            value = value.replace("$\"", "'", 1)
+            value = value.replace("$\"", "'", 1)
+            # return False, "".join(["'", value, "'"])
+            return False, value
         elif tuple == val_type:
             return self.tuple_to_lua(value, indent)
         elif dict == val_type:
